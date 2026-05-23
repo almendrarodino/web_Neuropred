@@ -25,7 +25,7 @@ Ambos archivos pesan mas de 100 MB, por eso el repositorio usa Git LFS.
 ## Instalación local
 
 ```powershell
-git clone https://github.com/TU_USUARIO/web_Neuropred.git
+git clone https://github.com/almendrarodino/web_Neuropred.git
 cd web_Neuropred
 git lfs pull
 py -3.11 -m venv .venv
@@ -73,7 +73,7 @@ git lfs install
 git add .
 git commit -m "Initial NeuroPred platform"
 git branch -M main
-git remote add origin https://github.com/TU_USUARIO/web_Neuropred.git
+git remote add origin https://github.com/almendrarodino/web_Neuropred.git
 git push -u origin main
 ```
 
