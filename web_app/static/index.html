@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroPredict - Análisis de Tumores</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css?v=20260523-3">
+</head>
+
+<body>
+    <div id="login-view" class="view active">
+        <div class="login-container">
+            <div class="login-left">
+                <div class="logo-box app-logo">
+                    <img src="/static/logo.png" alt="NeuroPredict Logo" style="height: 40px; width: auto;">
+                    <h2>NeuroPredict</h2>
+                </div>
+                <h1>Acceso Médico</h1>
+                <p>Plataforma avanzada de análisis y clasificación de tumores cerebrales impulsada por IA.</p>
+
+                <form id="login-form">
+                    <div class="input-group">
+                        <label for="username">Usuario Médico</label>
+                        <input type="text" id="username" required placeholder="Ej. drmartinez">
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Contraseña</label>
+                        <input type="password" id="password" required placeholder="********">
+                    </div>
+                    <button type="submit" class="btn-primary">Ingresar al Sistema</button>
+                    <p class="toggle-auth">¿No tienes cuenta? <a href="#" id="go-to-register">Registrarse</a></p>
+                </form>
+            </div>
+            <div class="login-right">
+                <div class="glass-card">
+                    <h3>"La IA como segunda opinión confiable"</h3>
+                    <p>Precisión clínica a nivel de especialistas, optimizando tiempos de diagnóstico en resonancias magnéticas.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="dashboard-view" class="view hidden">
+        <aside class="sidebar">
+            <div class="logo-box app-logo">
+                <img src="/static/logo.png" alt="NeuroPredict Logo" style="height: 32px; width: auto;">
+                <h2>NeuroPredict</h2>
+            </div>
+
+            <nav class="nav-links">
+                <a href="#" class="active" id="nav-patients">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    Mis Pacientes
+                </a>
+            </nav>
+
+            <div class="user-info">
+                <div class="avatar"><span id="user-initial">D</span></div>
+                <div class="user-details">
+                    <button type="button" id="user-profile-btn" class="user-profile-button"><span id="user-name-display">Usuario</span></button>
+                    <a href="#" id="logout-btn">Cerrar Sesión</a>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div class="search-bar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="search-patient" placeholder="Buscar por nombre, DNI o mail...">
+                </div>
+                <div class="filter-bar">
+                    <select id="filter-tumor">
+                        <option value="">Todos los diagnósticos</option>
+                        <option value="glioma">Glioma</option>
+                        <option value="meningioma">Meningioma</option>
+                        <option value="pituitary">Pituitario</option>
+                        <option value="no_tumor">Sin Tumor</option>
+                    </select>
+                </div>
+                <div class="filter-bar">
+                    <select id="sort-patients">
+                        <option value="recent">Más recientes</option>
+                        <option value="alphabetic">Orden alfabético</option>
+                    </select>
+                </div>
+                <button class="btn-primary" id="btn-new-patient">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Nuevo Paciente
+                </button>
+            </header>
+
+            <div id="patients-list-container" class="content-area">
+                <div class="page-title">
+                    <h2>Directorio de Pacientes</h2>
+                    <p>Gestiona historias clínicas y estudios neurológicos.</p>
+                </div>
+
+                <div class="patients-grid" id="patients-grid"></div>
+            </div>
+
+            <div id="patient-detail-container" class="content-area hidden">
+                <div class="back-link" id="btn-back-to-patients">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    Volver a Pacientes
+                </div>
+
+                <div class="patient-header">
+                    <div class="patient-heading-block">
+                        <h2 id="detail-patient-name">Nombre del Paciente</h2>
+                        <div class="patient-meta-grid">
+                            <div><span>ID</span> <span class="patient-meta-value" id="detail-patient-id">#--</span></div>
+                            <div><span>Edad</span> <span class="patient-meta-value"><span id="detail-patient-age">--</span> años</span></div>
+                            <div><span>DNI</span> <span class="patient-meta-value" id="detail-patient-dni">--</span></div>
+                            <div><span>Mail</span> <span class="patient-meta-value" id="detail-patient-email">--</span></div>
+                        </div>
+                        <div class="patient-actions">
+                            <button class="btn-secondary" id="btn-edit-patient">Editar</button>
+                            <button class="btn-secondary danger-action" id="btn-delete-patient">Eliminar</button>
+                            <button class="btn-secondary" id="btn-download-report">Informe PDF</button>
+                            <button class="btn-secondary" id="btn-new-study">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                                Cargar estudio
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="patient-notes-card clickable-card" id="patient-notes-card">
+                    <div class="section-title-row">
+                        <h3>Notas Clínicas</h3>
+                        <button class="btn-text" id="btn-edit-notes">Editar notas</button>
+                    </div>
+                    <p id="detail-patient-notes">Cargando notas...</p>
+                </div>
+
+                <div class="predictions-history">
+                    <h3>Historial de Estudios y Diagnóstico IA</h3>
+                    <div class="history-list" id="history-list"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal-backdrop hidden" id="modal-new-patient">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Registrar Nuevo Paciente</h2>
+                <button class="close-modal">x</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-new-patient">
+                    <div class="form-grid two">
+                        <div class="input-group">
+                            <label>Nombre</label>
+                            <input type="text" id="np-first-name" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Apellido</label>
+                            <input type="text" id="np-last-name" required>
+                        </div>
+                    </div>
+                    <div class="form-grid two">
+                        <div class="input-group">
+                            <label>Edad</label>
+                            <input type="number" id="np-age" min="0" required>
+                        </div>
+                        <div class="input-group">
+                            <label>DNI</label>
+                            <input type="text" id="np-dni">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Mail</label>
+                        <input type="email" id="np-email">
+                    </div>
+                    <div class="input-group">
+                        <label>Notas Clínicas (Opcional)</label>
+                        <textarea id="np-notes" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary full-width">Guardar Paciente</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop hidden" id="modal-user-profile">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Datos personales</h2>
+                <button class="close-modal">x</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-user-profile">
+                    <div class="form-grid two">
+                        <div class="input-group">
+                            <label>Nombre</label>
+                            <input type="text" id="up-first-name">
+                        </div>
+                        <div class="input-group">
+                            <label>Apellido</label>
+                            <input type="text" id="up-last-name">
+                        </div>
+                    </div>
+                    <div class="form-grid two">
+                        <div class="input-group">
+                            <label>DNI</label>
+                            <input type="text" id="up-dni">
+                        </div>
+                        <div class="input-group">
+                            <label>Profesión</label>
+                            <input type="text" id="up-profession" placeholder="Ej. Neurólogo">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Mail</label>
+                        <input type="email" id="up-email">
+                    </div>
+                    <button type="submit" class="btn-primary full-width">Guardar datos</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop hidden" id="modal-edit-patient">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Editar Paciente</h2>
+                <button class="close-modal">x</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-edit-patient">
+                    <div class="form-grid two">
+                        <div class="input-group">
+                            <label>Nombre</label>
+                            <input type="text" id="ep-first-name" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Apellido</label>
+                            <input type="text" id="ep-last-name" required>
+                        </div>
+                    </div>
+                    <div class="form-grid two">
+                        <div class="input-group">
+                            <label>Edad</label>
+                            <input type="number" id="ep-age" min="0" required>
+                        </div>
+                        <div class="input-group">
+                            <label>DNI</label>
+                            <input type="text" id="ep-dni">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Mail</label>
+                        <input type="email" id="ep-email">
+                    </div>
+                    <button type="submit" class="btn-primary full-width">Actualizar Paciente</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop hidden" id="modal-edit-notes">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Editar Notas Clínicas</h2>
+                <button class="close-modal">x</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-edit-notes">
+                    <div class="input-group">
+                        <label>Notas Clínicas</label>
+                        <textarea id="patient-notes-input" rows="6"></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary full-width">Guardar Notas</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop hidden" id="modal-new-study">
+        <div class="modal modal-xl">
+            <div class="modal-header">
+                <h2>Análisis de Resonancia Magnética</h2>
+                <button class="close-modal">x</button>
+            </div>
+            <div class="modal-body split-modal">
+                <div class="upload-section">
+                    <form id="form-upload-study">
+                        <div class="upload-zone" id="drop-zone">
+                            <input type="file" id="file-input" accept=".jpg,.jpeg,.png,.mat,.dcm,.dicom,.zip" hidden>
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
+                            </svg>
+                            <p>Arrastra la imagen MRI (.png, .jpg, .mat, .dcm o .zip DICOM)</p>
+                            <span class="btn-secondary">Seleccionar Archivo</span>
+                        </div>
+                        <div id="file-preview-container" class="hidden">
+                            <img id="image-preview" src="" alt="Vista previa">
+                            <p id="selected-file-name" class="file-name"></p>
+                            <button type="button" class="btn-text" id="btn-remove-file">Cambiar archivo</button>
+                        </div>
+                        <div class="input-group mt-4">
+                            <label>Notas del Estudio (Opcional)</label>
+                            <textarea id="study-notes" rows="2" placeholder="Ej. Corte axial T1 con contraste..."></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary full-width mt-4" id="btn-analyze" disabled>Realizar predicción</button>
+                    </form>
+                </div>
+
+                <div class="results-section" id="results-panel">
+                    <div class="waiting-state" id="results-waiting">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5">
+                            <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path>
+                            <polyline points="21 3 21 8 16 8"></polyline>
+                        </svg>
+                        <p>Esperando imagen para analizar...</p>
+                    </div>
+
+                    <div class="loading-state hidden" id="results-loading">
+                        <div class="spinner"></div>
+                        <p>Analizando tejidos. Procesando Stage 1 y Stage 2...</p>
+                    </div>
+
+                    <div class="success-state hidden" id="results-success">
+                        <div class="result-badge" id="res-badge">GLIOMA</div>
+                        <h3 id="res-title">Tumor Detectado</h3>
+
+                        <div class="prob-container mt-4">
+                            <div class="prob-header">
+                                <span>P(Tumor) [Stage 1]</span>
+                                <span id="res-p-tumor">99.8%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="fill" id="bar-p-tumor"></div>
+                            </div>
+                        </div>
+
+                        <div class="subtype-probs mt-4" id="res-subtypes">
+                            <h4>Probabilidades de Subtipo [Stage 2]</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop hidden" id="modal-view-history">
+        <div class="modal modal-xl">
+            <div class="modal-header">
+                <h2>Detalles del Estudio Histórico</h2>
+                <button class="close-modal">x</button>
+            </div>
+            <div class="modal-body split-modal">
+                <div class="upload-section" style="text-align: center;">
+                    <img id="history-image-view" src="" alt="Estudio MRI" style="max-width: 100%; max-height: 350px; border-radius: 8px; background: black; object-fit: contain;">
+                    <div class="history-modal-actions">
+                        <button type="button" class="btn-secondary" id="btn-download-history-image">Descargar imagen</button>
+                        <button type="button" class="btn-secondary danger-action" id="btn-delete-history">Eliminar diagnóstico</button>
+                    </div>
+                    <div class="mt-4" style="text-align: left;">
+                        <h4>Notas del Estudio</h4>
+                        <p id="history-notes-view" style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.5rem;"></p>
+                    </div>
+                </div>
+
+                <div class="results-section">
+                    <div class="success-state">
+                        <div class="result-badge" id="history-badge-view"></div>
+                        <h3 id="history-title-view"></h3>
+
+                        <div class="prob-container mt-4">
+                            <div class="prob-header">
+                                <span>P(Tumor) [Stage 1]</span>
+                                <span id="history-ptumor-view"></span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="fill" id="history-bar-ptumor-view"></div>
+                            </div>
+                        </div>
+
+                        <div class="subtype-probs mt-4" id="history-subtypes-view"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast hidden">Mensaje</div>
+
+    <script src="/static/script.js?v=20260523-3"></script>
+</body>
+
+</html>

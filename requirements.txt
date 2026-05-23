@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+python-jose[cryptography]
+passlib
+python-multipart
+tensorflow
+numpy
+pillow
+h5py
+scipy
+pydicom
+reportlab
